@@ -1,5 +1,8 @@
 package com.stoyanov.developer.apptracker.adapters;
 
+import android.content.Context;
+import android.util.Log;
+
 import com.stoyanov.developer.apptracker.presenters.BasePresenter;
 
 import java.util.ArrayList;
@@ -11,7 +14,8 @@ public abstract class MvpRecyclerListAdapter<M, P extends BasePresenter, VH exte
 
     private final List<M> models;
 
-    public MvpRecyclerListAdapter() {
+    public MvpRecyclerListAdapter(Context context) {
+        super(context);
         models = new ArrayList<>();
     }
 
@@ -89,7 +93,6 @@ public abstract class MvpRecyclerListAdapter<M, P extends BasePresenter, VH exte
     }
 
     private void addInternal(M item) {
-        System.err.println("Adding item " + getModelId(item));
         models.add(item);
         presenters.put(getModelId(item), createPresenter(item));
     }

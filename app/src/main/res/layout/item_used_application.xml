@@ -13,10 +13,11 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        tool:text="12:34"
+        tool:text="30 s"
         android:textStyle="bold"
         android:textIsSelectable="false"
-        android:textSize="12sp" />
+        android:textSize="14sp"
+        android:textColor="@color/primary_material_dark" />
 
     <ImageView
         android:id="@+id/imageview_app_icon"
@@ -27,7 +28,10 @@
         android:layout_marginLeft="10dp"
         android:src="@mipmap/ic_launcher"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp" />
+        android:layout_marginBottom="5dp"
+        android:maxHeight="48dp"
+        android:maxWidth="48dp"
+        android:adjustViewBounds="true" />
 
     <TextView
         android:id="@+id/textview_name_used_app"
@@ -37,6 +41,7 @@
         android:layout_marginLeft="10dp"
         android:layout_toEndOf="@+id/imageview_app_icon"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        tool:text="Vkontakte" />
+        tool:text="Vkontakte"
+        android:textSize="14sp" />
 
 </RelativeLayout>

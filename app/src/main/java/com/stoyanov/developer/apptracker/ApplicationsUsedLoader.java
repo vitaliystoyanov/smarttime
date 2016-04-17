@@ -16,7 +16,6 @@ import java.util.Locale;
 public class ApplicationsUsedLoader extends AsyncTaskLoader<List<ApplicationUsed>> {
 
     private static final String TAG = "ApplicationsUsedLoader";
-    //public static final String PATTERN_DISPLAY_TIME = "HH:mm:ss yyyy/MM/dd";
 
     private List<ApplicationUsed> data;
 
@@ -37,8 +36,6 @@ public class ApplicationsUsedLoader extends AsyncTaskLoader<List<ApplicationUsed
                 ApplicationUsed instance = new ApplicationUsed();
                 instance.setId(item.getId());
                 instance.setAppName(item.getAppPackage());
-/*                instance.setSpendTime(new SimpleDateFormat(PATTERN_DISPLAY_TIME,
-                        Locale.getDefault()).format(item.getDatetime())); // FIXME: 4/3/2016*/
                 instance.setSpendTime(item.getSpendTime());
                 instance.setDate(item.getDatetime());
 

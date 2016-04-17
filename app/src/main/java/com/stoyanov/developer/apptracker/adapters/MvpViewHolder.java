@@ -13,8 +13,6 @@ public abstract class MvpViewHolder<P extends BasePresenter> extends RecyclerVie
         super(itemView);
     }
 
-
-
     public void bindPresenter(P presenter) {
         this.presenter = presenter;
         presenter.bindView(this);

@@ -1,22 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="7dp">
 
+
+    <TextView
+        android:id="@+id/textview_total_spent_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:text="Total spent time: 1 h 23 m 3 ss"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textSize="12dp"
+        android:textStyle="bold" />
 
     <ProgressBar
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="42dp"
         android:layout_height="42dp"
-        android:layout_gravity="center"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
         android:indeterminate="true"
         android:visibility="gone" />
 
     <lecho.lib.hellocharts.view.LineChartView
-        android:id="@+id/chart"
+        android:id="@+id/chart_line"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_below="@+id/textview_total_spent_time"
+        android:visibility="invisible" />
+
+    <lecho.lib.hellocharts.view.ColumnChartView
+        android:id="@+id/chart_column"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/textview_total_spent_time"
+        android:visibility="invisible" />
 
 </RelativeLayout>

@@ -1,11 +1,17 @@
 <resources>
     <string name="app_name">App Tracker</string>
-    <string-array name="spinner_items">
+    <string-array name="spinner_items_data">
         <item>Today</item>
         <item>Last week</item>
         <item>Last month</item>
         <item>All time</item>
         <item>History</item>
+    </string-array>
+
+    <string-array name="spinner_items_charts">
+        <item>Today</item>
+        <item>Last week</item>
+        <item>All time</item>
     </string-array>
 
 </resources>

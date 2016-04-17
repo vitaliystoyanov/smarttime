@@ -4,9 +4,9 @@ public interface MainView {
 
     void showConfirmationDialog();
 
-    void showUsedAppsList();
-
     void goToCharts();
+
+    void showListOfData(boolean animationExit);
 
     void goToSettings();
 
@@ -16,9 +16,9 @@ public interface MainView {
 
     void visibleHomeButton(boolean isVisible);
 
-    void showSnackbar(boolean isEnable);
+    void showStateService(boolean isEnable);
 
-    void showSnackbarOnDelete();
+    void showMassageAfterDelete();
 
     void enableService();
 

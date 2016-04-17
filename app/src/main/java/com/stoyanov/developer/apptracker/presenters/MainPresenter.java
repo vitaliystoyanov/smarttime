@@ -27,12 +27,12 @@ public class MainPresenter extends BasePresenter<Object, MainView> {
 
     public void onEnableService() {
         view().enableService();
-        view().showSnackbar(true);
+        view().showStateService(true);
     }
 
     public void onDisableService() {
         view().disableService();
-        view().showSnackbar(false);
+        view().showStateService(false);
     }
 
     public void onClickSettings() {
@@ -43,9 +43,14 @@ public class MainPresenter extends BasePresenter<Object, MainView> {
         view().goToCharts();
     }
 
-    public void onShowListOfApps() {
+    public void onShowListOfData() {
         view().visibleHomeButton(false);
-        view().showUsedAppsList();
+        view().showListOfData(false);
+    }
+
+    public void onBackToListOfData() {
+        view().visibleHomeButton(false);
+        view().showListOfData(true);
     }
 
     public void onClickClearData() {
@@ -54,6 +59,6 @@ public class MainPresenter extends BasePresenter<Object, MainView> {
 
     public void onClickAgreeConfirmDialog(DAOInterface<Application> instanceDAO) {
         instanceDAO.deleteAll();
-        view().showSnackbarOnDelete();
+        view().showMassageAfterDelete();
     }
 }

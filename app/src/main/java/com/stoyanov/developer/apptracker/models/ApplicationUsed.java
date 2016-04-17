@@ -2,7 +2,7 @@ package com.stoyanov.developer.apptracker.models;
 
 import java.util.Date;
 
-public class ApplicationUsed {
+public class ApplicationUsed implements Comparable<ApplicationUsed> {
 
     private int id;
     private String appName;
@@ -11,12 +11,13 @@ public class ApplicationUsed {
 
     public ApplicationUsed(ApplicationUsed applicationUsed) {
         id = applicationUsed.getId();
-        appName = applicationUsed.getAppName();
-        spendTime = applicationUsed.getSpendTime();
+        appName = applicationUsed.getApplicationName();
+        spendTime = applicationUsed.getTimeSpent();
         date = applicationUsed.getDate();
     }
 
-    public ApplicationUsed() {}
+    public ApplicationUsed() {
+    }
 
     public Date getDate() {
         return date;
@@ -34,7 +35,7 @@ public class ApplicationUsed {
         this.id = id;
     }
 
-    public int getSpendTime() {
+    public int getTimeSpent() {
         return spendTime;
     }
 
@@ -42,11 +43,26 @@ public class ApplicationUsed {
         this.spendTime = spendTime;
     }
 
-    public String getAppName() {
+    public String getApplicationName() {
         return appName;
     }
 
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+
+    @Override
+    public int compareTo(ApplicationUsed another) {
+        return another.getTimeSpent() - this.spendTime;
+    }
+
+    @Override
+    public String toString() {
+        return "ApplicationUsed{" +
+                "id=" + id +
+                ", appName='" + appName + '\'' +
+                ", spendTime=" + spendTime +
+                ", date=" + date +
+                '}';
     }
 }

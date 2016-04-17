@@ -6,13 +6,11 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.stoyanov.developer.apptracker.MainActivity;
 import com.stoyanov.developer.apptracker.R;
-import com.stoyanov.developer.apptracker.ScreenLockReceiver;
 import com.stoyanov.developer.apptracker.database.dao.ApplicationDAO;
 import com.stoyanov.developer.apptracker.database.dao.entity.Application;
 
@@ -31,7 +29,6 @@ public class TrackerService extends Service implements TrackerIterface {
     private Notification notification;
     private boolean runningThread = true;
     private Thread thread;
-    private ScreenLockReceiver screenLockReceiver;
 
     public TrackerService() {
     }
@@ -43,7 +40,6 @@ public class TrackerService extends Service implements TrackerIterface {
         activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         notification = createNotification("Unknown");
         showNotification();
-        setupScreenReceiver();
 
         initThread();
     }
@@ -83,18 +79,12 @@ public class TrackerService extends Service implements TrackerIterface {
         thread.start();
     }
 
-    private void setupScreenReceiver() {
-        Log.d(TAG, "setupScreenReceiver: ");
-        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-        filter.addAction(Intent.ACTION_SCREEN_OFF);
-        screenLockReceiver = new ScreenLockReceiver();
-        registerReceiver(screenLockReceiver, filter);
-    }
-
     private Notification createNotification(String text) {
-        //TODO It is necessary to add flags in pending intent that it allows to display activity
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT);
         return new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setTicker(text)
@@ -114,7 +104,7 @@ public class TrackerService extends Service implements TrackerIterface {
         List<ActivityManager.RunningAppProcessInfo> list = activityManager.getRunningAppProcesses();
         if (list.size() > 0) {
             Log.d(TAG, "getRunningApplication: id = " + list.get(0).processName);
-            startForeground(ID_NOTIFICATION, createNotification(list.get(0).processName));
+            //startForeground(ID_NOTIFICATION, createNotification(list.get(0).processName));
             return list.get(0).processName;
         }
         return null;
@@ -165,11 +155,6 @@ public class TrackerService extends Service implements TrackerIterface {
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
         notificationManager.cancel(ID_NOTIFICATION);
-
-        if (screenLockReceiver != null) {
-            unregisterReceiver(screenLockReceiver);
-            screenLockReceiver = null;
-        }
 
         runningThread = false;
         thread.interrupt();

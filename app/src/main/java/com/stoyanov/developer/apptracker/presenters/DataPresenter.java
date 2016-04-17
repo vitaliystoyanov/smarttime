@@ -9,7 +9,6 @@ import com.stoyanov.developer.apptracker.views.DataView;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView> {
@@ -26,7 +25,6 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
 
     @Override
     protected void updateView() {
-
     }
 
     @Override
@@ -43,13 +41,15 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
     }
 
     public void onClickHistory() {
-        new ProcessingThread() {
+        ProcessingThread thread = new ProcessingThread() {
             @Override
             void performLongOperation() {
                 processedData.clear();
                 processedData.addAll(model);
             }
-        }.start();
+        };
+        thread.setSorting(false);
+        thread.start();
     }
 
     public void onClickAllTime() {
@@ -68,29 +68,27 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
         }.start();
     }
 
-    public void onClickLastMouth() {
+    public void onClickLastMonth() {
         new ProcessingThread() {
             @Override
             void performLongOperation() {
-                Date now = new Date();
                 Calendar nowCalendar = Calendar.getInstance();
                 nowCalendar.setFirstDayOfWeek(Calendar.MONDAY);
-                nowCalendar.setTime(now);
                 int nowMonth = nowCalendar.get(Calendar.MONTH);
                 Log.d(TAG, "performLongOperation: nowMonth == " + nowMonth);
 
                 processedData.clear();
-                for (ApplicationUsed item : model) {
-                    ApplicationUsed newInstance = new ApplicationUsed(item);
+                for (ApplicationUsed element : model) {
+                    ApplicationUsed newInstance = new ApplicationUsed(element);
 
-                    Date itemDate = newInstance.getDate();
-                    Calendar itemCalendar = Calendar.getInstance();
-                    itemCalendar.setTime(itemDate);
+                    Calendar item = Calendar.getInstance();
+                    nowCalendar.setFirstDayOfWeek(Calendar.MONDAY);
+                    item.setTime(newInstance.getDate());
 
-                    Log.d(TAG, "performLongOperation: itemCalendar.get(Calendar.MONTH) == "
-                            + itemCalendar.get(Calendar.MONTH));
+                    Log.d(TAG, "performLongOperation: item.get(Calendar.MONTH) == "
+                            + item.get(Calendar.MONTH));
 
-                    if (nowMonth == itemCalendar.get(Calendar.MONTH)) {
+                    if (nowMonth == item.get(Calendar.MONTH)) {
                         processedData.add(newInstance);
                     }
                 }
@@ -105,23 +103,18 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
         new ProcessingThread() {
             @Override
             void performLongOperation() {
-                Date now = new Date();
-                Calendar nowCalendar = Calendar.getInstance();
-                nowCalendar.setFirstDayOfWeek(Calendar.MONDAY);
-                nowCalendar.setTime(now);
-                int nowWeekOfYear = nowCalendar.get(Calendar.WEEK_OF_YEAR);
+                Calendar now = Calendar.getInstance();
+                now.setFirstDayOfWeek(Calendar.MONDAY);
+                int nowWeekOfYear = now.get(Calendar.WEEK_OF_YEAR);
                 Log.d(TAG, "performLongOperation: nowWeekOfYear == " + nowWeekOfYear);
 
                 processedData.clear();
                 for (ApplicationUsed item : model) {
                     ApplicationUsed newInstance = new ApplicationUsed(item);
 
-                    Date itemDate = newInstance.getDate();
                     Calendar itemCalendar = Calendar.getInstance();
-                    itemCalendar.setTime(itemDate);
-
-                    Log.d(TAG, "performLongOperation: itemCalendar.get(Calendar.WEEK_OF_YEAR) == "
-                            + itemCalendar.get(Calendar.WEEK_OF_YEAR));
+                    itemCalendar.setFirstDayOfWeek(Calendar.MONDAY);
+                    itemCalendar.setTime(newInstance.getDate());
 
                     if (nowWeekOfYear == itemCalendar.get(Calendar.WEEK_OF_YEAR)) {
                         processedData.add(newInstance);
@@ -138,14 +131,19 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
         new ProcessingThread() {
             @Override
             void performLongOperation() {
-                Date now = new Date();
+                Calendar now = Calendar.getInstance();
+                now.setFirstDayOfWeek(Calendar.MONDAY);
+                int nowDay = now.get(Calendar.DAY_OF_YEAR);
                 processedData.clear();
-                for (int i = 0; i < model.size(); i++) {
-                    ApplicationUsed item = new ApplicationUsed(model.get(i));
-                    Date itemDate = item.getDate();
-                    if (now.getYear() == itemDate.getYear()
-                            && now.getMonth() == itemDate.getMonth()
-                            && now.getDay() == itemDate.getDay()) {
+                for (ApplicationUsed element : model) {
+                    ApplicationUsed item = new ApplicationUsed(element);
+
+                    Calendar itemDate = Calendar.getInstance();
+                    itemDate.setFirstDayOfWeek(Calendar.MONDAY);
+                    itemDate.setTime(item.getDate());
+
+                    if (nowDay == itemDate.get(Calendar.DAY_OF_YEAR)) {
+                        Log.d(TAG, "onClickToday: item added - " + item.toString());
                         processedData.add(item);
                     }
                 }
@@ -162,8 +160,8 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
             ApplicationUsed app = list.get(i);
             if (!contains(bufferList, app)) {
                 for (int t = i + 1; t < list.size(); t++) {
-                    if (app.getAppName().equals(list.get(t).getAppName())) {
-                        app.setSpendTime(app.getSpendTime() + list.get(t).getSpendTime());
+                    if (app.getApplicationName().equals(list.get(t).getApplicationName())) {
+                        app.setSpendTime(app.getTimeSpent() + list.get(t).getTimeSpent());
                     }
                 }
                 bufferList.add(app);
@@ -175,7 +173,7 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
     private boolean contains(ArrayList<ApplicationUsed> list, ApplicationUsed app) {
         boolean flag = false;
         for (int i = 0; i < list.size(); i++) {
-            if (app.getAppName().equals(list.get(i).getAppName())) {
+            if (app.getApplicationName().equals(list.get(i).getApplicationName())) {
                 flag = true;
                 break;
             }
@@ -184,6 +182,8 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
     }
 
     public abstract class ProcessingThread {
+
+        private boolean isSorting = true;
 
         public void start() {
             if (!isProcessingData) {
@@ -200,6 +200,9 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
                             public void run() {
                                 if (setupDone()) {
                                     if (processedData.size() > 0) {
+                                        if (isSorting) {
+                                            Collections.sort(processedData);
+                                        }
                                         view().showQuantityOfData(processedData.size());
                                     } else {
                                         view().displayEmptyState(true);
@@ -215,6 +218,10 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
             } else {
                 view().showStateProcessing();
             }
+        }
+
+        public void setSorting(boolean isSorting) {
+            this.isSorting = isSorting;
         }
 
         abstract void performLongOperation();

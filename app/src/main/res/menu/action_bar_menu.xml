@@ -18,8 +18,8 @@
         android:id="@+id/item_clear_all_apps"
         android:title="Clear data" />
 
-    <item
+<!--    <item
         android:id="@+id/item_settings"
-        android:title="Settings" />
+        android:title="Settings" />-->
 
 </menu>

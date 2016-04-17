@@ -43,4 +43,8 @@ public abstract class BasePresenter<M, V> {
     protected boolean setupDone() {
         return view() != null && model != null;
     }
+
+    public boolean isSetView() {
+        return view == null;
+    }
 }

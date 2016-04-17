@@ -36,23 +36,20 @@ public class ApplicationUsedViewHolder extends MvpViewHolder<ApplicationsUsedPre
         setApplicationInfo(name);
     }
 
-    public void setApplicationInfo(String packageName) { // FIXME: 4/1/2016
-        try {
-            PackageManager manager = context.getPackageManager();
-            appIcon.setImageDrawable(null);
-            if (!packageName.equals("screen lock")) {
-                ApplicationInfo applicationInfo = manager.getApplicationInfo(packageName, 0);
+    public void setApplicationInfo(String packageName) {
 
-                appIcon.setImageDrawable(manager.getApplicationIcon(applicationInfo));
-                String name = String.valueOf(manager.getApplicationLabel(applicationInfo));
-                appName.setText(name);
-            } else {
-                appName.setText("screen lock");
-                appIcon.setImageResource(R.mipmap.ic_launcher);
-            }
+        PackageManager manager = context.getPackageManager();
+        appIcon.setImageDrawable(null);
+        try {
+            ApplicationInfo applicationInfo = manager.getApplicationInfo(packageName, 0);
+            appIcon.setImageDrawable(manager.getApplicationIcon(applicationInfo));
+            appName.setText(String.valueOf(manager.getApplicationLabel(applicationInfo)));
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "setApplicationInfo: ", e);
+            appName.setText("NameNotFound");
+            appIcon.setImageResource(R.mipmap.ic_launcher);
         }
+
     }
 
     public void setTime(String time) {
