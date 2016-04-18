@@ -12,19 +12,26 @@
         android:scrollbars="vertical" />
 
     <LinearLayout
-        android:id="@+id/linearlayout_empty_state"
-        android:layout_width="wrap_content"
+        android:id="@+id/linearlayout_empty_state_data"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:orientation="vertical"
         android:visibility="invisible">
 
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/technology"
+            android:layout_marginBottom="8dp" />
+
         <TextView
             android:id="@+id/textview_state_empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Opps! Empty"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:text="No history."
+            android:textSize="14dp"
+            android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
 

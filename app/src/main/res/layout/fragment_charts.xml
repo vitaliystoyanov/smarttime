@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:padding="7dp">
 
-
     <TextView
         android:id="@+id/textview_total_spent_time"
         android:layout_width="wrap_content"
@@ -13,10 +12,32 @@
         android:layout_marginBottom="10dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
-        android:text="Total spent time: 1 h 23 m 3 ss"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textSize="12dp"
         android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/linearlayout_empty_state_charts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:visibility="invisible" >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/square"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No history. No charts"
+            android:textSize="14dp"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
 
     <ProgressBar
         style="@style/Widget.AppCompat.ProgressBar"

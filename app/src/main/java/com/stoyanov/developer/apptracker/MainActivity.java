@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements MainView {
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         ApplicationDAO dao = new ApplicationDAO(getApplicationContext());
                         try {
-                            //mainPresenter.onClickAgreeConfirmDialog(dao);
+                            mainPresenter.onClickAgreeConfirmDialog(dao);
                         } finally {
                             dao.close();
                         }

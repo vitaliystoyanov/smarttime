@@ -11,7 +11,7 @@ public class SQLiteDAO {
 
     private static final String TAG = "SQLiteDAO";
 
-    protected SQLiteDatabase database;
+    protected static SQLiteDatabase database;
     private DatabaseHelper dbHelper;
     private Context context;
 
@@ -25,12 +25,14 @@ public class SQLiteDAO {
         if (dbHelper == null) {
             dbHelper = DatabaseHelper.getInstance(context);
         }
-        database = dbHelper.getWritableDatabase();
+        if (database == null) {
+            database = dbHelper.getWritableDatabase();
+        }
     }
 
     public void close() {
         Log.d(TAG, "close: ");
-        dbHelper.close();
-        database = null;
+        //dbHelper.close();
+        //database = null;
     }
 }

@@ -10,7 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -55,12 +58,14 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
     private boolean isFirstItemSpinnerSelected;
     private int currentItemSpinner;
     private ColumnChartView columnChart;
+    private LinearLayout layoutEmptyState;
     private LineChartView lineChart;
     private ChartPresenter presenter;
     private TextView totalSpentTime;
     private Spinner spinner;
     private LineChartData lineChartData;
     private ColumnChartData columnChartData;
+    private Animation animationScale;
 
 
     @Override
@@ -73,11 +78,14 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart: ");
-        presenter = new ChartPresenter();
-        presenter.bindView(this);
+        animationScale = AnimationUtils.loadAnimation(getActivity().getApplicationContext(),
+                R.anim.scale_up);
+        layoutEmptyState = (LinearLayout) getActivity().findViewById(R.id.linearlayout_empty_state_charts);
         totalSpentTime = (TextView) getActivity().findViewById(R.id.textview_total_spent_time);
         setupCharts();
         setupSpinner();
+        presenter = new ChartPresenter();
+        presenter.bindView(this);
     }
 
     private void setupCharts() {
@@ -86,7 +94,6 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
         columnChart.setValueSelectionEnabled(false);
         columnChart.setZoomEnabled(false);
         lineChart.setViewportCalculationEnabled(false);
-        //columnChart.setViewportCalculationEnabled(false);
         lineChart.setZoomEnabled(true);
         lineChart.setZoomType(ZoomType.HORIZONTAL);
 
@@ -297,8 +304,19 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
     }
 
     @Override
-    public void displayEmptyState(boolean state) {
-
+    public void displayEmptyState(boolean state) { // FIXME: 4/18/2016 operator
+        if (state) {
+            totalSpentTime.setVisibility(View.INVISIBLE);
+            lineChart.setVisibility(View.INVISIBLE);
+            columnChart.setVisibility(View.INVISIBLE);
+            layoutEmptyState.setVisibility(View.VISIBLE);
+            layoutEmptyState.startAnimation(animationScale);
+        } else {
+            totalSpentTime.setVisibility(View.VISIBLE);
+            lineChart.setVisibility(View.VISIBLE);
+            columnChart.setVisibility(View.VISIBLE);
+            layoutEmptyState.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override

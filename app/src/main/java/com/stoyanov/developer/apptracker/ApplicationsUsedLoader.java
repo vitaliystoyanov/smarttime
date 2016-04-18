@@ -28,21 +28,22 @@ public class ApplicationsUsedLoader extends AsyncTaskLoader<List<ApplicationUsed
         Log.d(TAG, "loadInBackground: ");
         ApplicationDAO dao = new ApplicationDAO(getContext());
         ArrayList<ApplicationUsed> list = new ArrayList<>();
+        ArrayList<Application> retrievedApps;
         try {
-            ArrayList<Application> retrievedApps = dao.retrieveAll();
-            for (int i = retrievedApps.size() - 1; i >= 0; i--) {
-                Application item = retrievedApps.get(i);
-
-                ApplicationUsed instance = new ApplicationUsed();
-                instance.setId(item.getId());
-                instance.setAppName(item.getAppPackage());
-                instance.setSpendTime(item.getSpendTime());
-                instance.setDate(item.getDatetime());
-
-                list.add(instance);
-            }
+            retrievedApps = dao.retrieveAll();
         } finally {
             dao.close();
+        }
+        for (int i = retrievedApps.size() - 1; i >= 0; i--) {
+            Application item = retrievedApps.get(i);
+
+            ApplicationUsed instance = new ApplicationUsed();
+            instance.setId(item.getId());
+            instance.setAppName(item.getAppPackage());
+            instance.setSpendTime(item.getSpendTime());
+            instance.setDate(item.getDatetime());
+
+            list.add(instance);
         }
         return list;
     }

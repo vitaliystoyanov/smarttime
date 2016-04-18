@@ -24,9 +24,7 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
 
     @Override
     protected void updateView() {
-        if (setupDone()) {
-            view().displayEmptyState(false);
-        }
+
     }
 
     public void onClickToday() {
@@ -64,8 +62,13 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
 
             @Override
             void displayData(int[] data) {
-                view().displayToday(data);
-                view().displayTotalTimeSpent(getTotalSpentMinutes(data));
+                int total = getTotalSpentMinutes(data);
+                if (total != 0) {
+                    view().displayToday(data);
+                    view().displayTotalTimeSpent(total);
+                } else {
+                    view().displayEmptyState(true);
+                }
             }
         }.start();
     }
@@ -107,8 +110,13 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
 
             @Override
             void displayData(int[] data) {
-                view().displayLastWeek(data);
-                view().displayTotalTimeSpent(getTotalSpentMinutes(data));
+                int total = getTotalSpentMinutes(data);
+                if (total != 0) {
+                    view().displayLastWeek(data);
+                    view().displayTotalTimeSpent(total);
+                } else {
+                    view().displayEmptyState(true);
+                }
             }
         }.start();
     }

@@ -3,6 +3,7 @@ package com.stoyanov.developer.apptracker.database.dao;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.stoyanov.developer.apptracker.database.dao.entity.Application;
@@ -25,7 +26,7 @@ public class ApplicationDAO extends SQLiteDAO implements DAOInterface<Applicatio
     }
 
     @Override
-    public long create(Application application) {
+    public synchronized long create(Application application) {
         Log.d(TAG, "create: Instance of application = " + application.toString());
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.PACKAGE_APP_COLUMN, application.getAppPackage());
@@ -60,39 +61,45 @@ public class ApplicationDAO extends SQLiteDAO implements DAOInterface<Applicatio
     }
 
     @Override
-    public ArrayList<Application> retrieveAll() {
+    public  ArrayList<Application> retrieveAll() {
         ArrayList<Application> applications = new ArrayList<>();
-        Cursor cursor = null;
-        try {
-            cursor = database.query(DatabaseHelper.APPLICATIONS_TABLE,
-                    new String[]{DatabaseHelper.ID_COLUMN,
-                            DatabaseHelper.PACKAGE_APP_COLUMN,
-                            DatabaseHelper.DATETIME_COLUMN, DatabaseHelper.SPEND_TIME_COLUMN},
-                    null, null, null, null, null);
-
-            while (cursor.moveToNext()) {
-                int idColumnIndex = cursor.getColumnIndex(DatabaseHelper.ID_COLUMN);
-                int packageAppColumnIndex = cursor.getColumnIndex(DatabaseHelper.PACKAGE_APP_COLUMN);
-                int dateTimeColumnIndex = cursor.getColumnIndex(DatabaseHelper.DATETIME_COLUMN);
-                int spendTimeColumnIndex = cursor.getColumnIndex(DatabaseHelper.SPEND_TIME_COLUMN);
-
-                Application application = new Application();
-                application.setId(cursor.getInt(idColumnIndex));
-                application.setAppPackage(cursor.getString(packageAppColumnIndex));
-                application.setSpendTime(cursor.getInt(spendTimeColumnIndex));
-
-                try {
-                    application.setDatetime(formatter.parse(cursor.getString(dateTimeColumnIndex)));
-                } catch (java.text.ParseException e) {
-                    application.setDatetime(null);
-                    Log.e(TAG, "retrieveAll: Can not parse datetime from a cursor", e);
+        synchronized (database) {
+            Cursor cursor = null;
+            try {
+                Log.d(TAG, "retrieveAll: isOpen == " + database.isOpen());
+                if (!database.isOpen()) {
+                    open();
                 }
-                applications.add(application);
-            }
-            Log.d(TAG, "retrieveAll: List of the Application objects has got such size = " + applications.size());
-        } finally {
-            if (cursor != null) {
-                cursor.close();
+                cursor = database.query(DatabaseHelper.APPLICATIONS_TABLE,
+                        new String[]{DatabaseHelper.ID_COLUMN,
+                                DatabaseHelper.PACKAGE_APP_COLUMN,
+                                DatabaseHelper.DATETIME_COLUMN, DatabaseHelper.SPEND_TIME_COLUMN},
+                        null, null, null, null, null);
+
+                while (!cursor.isClosed() && cursor.moveToNext()) {
+                    int idColumnIndex = cursor.getColumnIndex(DatabaseHelper.ID_COLUMN);
+                    int packageAppColumnIndex = cursor.getColumnIndex(DatabaseHelper.PACKAGE_APP_COLUMN);
+                    int dateTimeColumnIndex = cursor.getColumnIndex(DatabaseHelper.DATETIME_COLUMN);
+                    int spendTimeColumnIndex = cursor.getColumnIndex(DatabaseHelper.SPEND_TIME_COLUMN);
+
+                    Application application = new Application();
+                    application.setId(cursor.getInt(idColumnIndex));
+                    application.setAppPackage(cursor.getString(packageAppColumnIndex));
+                    application.setSpendTime(cursor.getInt(spendTimeColumnIndex));
+
+                    try {
+                        application.setDatetime(formatter.parse(cursor.getString(dateTimeColumnIndex)));
+                    } catch (java.text.ParseException e) {
+                        application.setDatetime(null);
+                        Log.e(TAG, "retrieveAll: Can not parse datetime from a cursor", e);
+                    }
+                    applications.add(application);
+                }
+                Log.d(TAG, "retrieveAll: List of the Application objects has got such size = " + applications.size());
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
             }
         }
         return applications;

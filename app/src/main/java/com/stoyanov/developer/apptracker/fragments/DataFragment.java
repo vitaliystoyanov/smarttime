@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -45,6 +47,7 @@ public class DataFragment extends Fragment implements DataView,
     private RecyclerView recyclerView;
     private int currentPositionItemSpinner;
     private int lastItemPosition;
+    private Animation animationScale;
 
     public DataFragment() {
     }
@@ -60,10 +63,11 @@ public class DataFragment extends Fragment implements DataView,
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart: ");
+        animationScale = AnimationUtils.loadAnimation(getActivity(), R.anim.scale_up);
+        layoutEmptyState = (LinearLayout) getActivity().findViewById(R.id.linearlayout_empty_state_data);
+        progressView = (CircularProgressView) getActivity().findViewById(R.id.progress_view);
         presenter = new DataPresenter();
         presenter.bindView(this);
-        progressView = (CircularProgressView) getActivity().findViewById(R.id.progress_view);
-        layoutEmptyState = (LinearLayout) getActivity().findViewById(R.id.linearlayout_empty_state);
         setupRecycleView();
         setupSpinner();
     }
@@ -74,6 +78,19 @@ public class DataFragment extends Fragment implements DataView,
         adapter.addItems(getResources().getStringArray(R.array.spinner_items_data));
         spinner.setAdapter(null);
         spinner.setAdapter(adapter);
+    }
+
+    private void setupRecycleView() {
+        recyclerView = (RecyclerView) getActivity()
+                .findViewById(R.id.recycler_view_used_apps);
+
+        recyclerView.setVisibility(View.GONE);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),
+                LinearLayoutManager.VERTICAL, false));
+
+        adapter = new ApplicationsUsedAdapter(getActivity());
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -104,19 +121,6 @@ public class DataFragment extends Fragment implements DataView,
         } else if (position == POSITION_TODAY) {
             presenter.onClickToday();
         }
-    }
-
-    private void setupRecycleView() {
-        recyclerView = (RecyclerView) getActivity()
-                .findViewById(R.id.recycler_view_used_apps);
-
-        recyclerView.setVisibility(View.GONE);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),
-                LinearLayoutManager.VERTICAL, false));
-
-        adapter = new ApplicationsUsedAdapter(getActivity());
-        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -177,6 +181,12 @@ public class DataFragment extends Fragment implements DataView,
 
     @Override
     public void displayEmptyState(boolean isVisible) {
+        if (isVisible) {
+            layoutEmptyState.setVisibility(View.VISIBLE);
+            layoutEmptyState.startAnimation(animationScale);
+        } else {
+            layoutEmptyState.setVisibility(View.INVISIBLE);
+        }
         layoutEmptyState.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
