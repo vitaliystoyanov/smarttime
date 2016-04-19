@@ -47,7 +47,7 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
 
     public static final String TAG = "ChartsFragment";
 
-    private final static String[] days = new String[]{"Sun", "Mon", "Tue", "Wen", "Thu", "Fri", "Sat",};
+    private static String[] days;
     public static final String EXTRA_CURRENT_ITEM_SPINNER = "EXTRA_CURRENT_ITEM_SPINNER";
     private static final int ID_LOADER_CHARTS = 2;
     private static final int ITEM_POSITION_TODAY = 0;
@@ -66,6 +66,7 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
     private LineChartData lineChartData;
     private ColumnChartData columnChartData;
     private Animation animationScale;
+    private String[] months;
 
 
     @Override
@@ -78,6 +79,8 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
     public void onStart() {
         super.onStart();
         Log.d(TAG, "onStart: ");
+        days = getResources().getStringArray(R.array.chart_axis_days);
+        months = getResources().getStringArray(R.array.chart_axis_months);
         animationScale = AnimationUtils.loadAnimation(getActivity().getApplicationContext(),
                 R.anim.scale_up);
         layoutEmptyState = (LinearLayout) getActivity().findViewById(R.id.linearlayout_empty_state_charts);
@@ -98,7 +101,6 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
         lineChart.setZoomType(ZoomType.HORIZONTAL);
 
         createLineChart();
-        createColumnChart();
     }
 
     private void createLineChart() {
@@ -119,8 +121,8 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
         lineChartData = new LineChartData(lines);
         Axis axisX = new Axis();
         Axis axisY = new Axis().setHasLines(true);
-        axisX.setName("Time (hours)");
-        axisY.setName("Spent time (minutes)");
+        axisX.setName(getResources().getString(R.string.chart_axis_time_hours));
+        axisY.setName(getResources().getString(R.string.chart_axis_spent_time));
         lineChartData.setAxisXBottom(axisX);
         lineChartData.setAxisYLeft(axisY);
 
@@ -128,7 +130,7 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
         lineChart.setLineChartData(lineChartData);
     }
 
-    private void createColumnChart() {
+    private void createColumnChartDays() {
         int numColumns = 7;
         List<Column> columns = new ArrayList<>();
         List<AxisValue> axisValues = new ArrayList<>();
@@ -147,7 +149,33 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
         Axis axisX = new Axis(axisValues);
         Axis axisY = new Axis().setHasLines(true);
         axisX.setName(null);
-        axisY.setName("Spent time (minutes)");
+        axisY.setName(getResources().getString(R.string.chart_axis_spent_time));
+        columnChartData.setAxisXBottom(axisX);
+        columnChartData.setAxisYLeft(axisY);
+
+        columnChart.setColumnChartData(columnChartData);
+    }
+
+    private void createColumnChartMonths() {
+        int numColumns = 12;
+        List<Column> columns = new ArrayList<>();
+        List<AxisValue> axisValues = new ArrayList<>();
+        for (int i = 0; i < numColumns; ++i) {
+            List<SubcolumnValue> values = new ArrayList<>();
+            values.add(new SubcolumnValue((float) Math.random() * 50f + 5, ChartUtils.nextColor()));
+            axisValues.add(new AxisValue(i).setLabel(months[i]));
+
+            Column column = new Column(values);
+            column.setHasLabels(true);
+            columns.add(column);
+        }
+
+        columnChartData = new ColumnChartData(columns);
+
+        Axis axisX = new Axis(axisValues);
+        Axis axisY = new Axis().setHasLines(true);
+        axisX.setName(null);
+        axisY.setName(getResources().getString(R.string.chart_axis_spent_time));
         columnChartData.setAxisXBottom(axisX);
         columnChartData.setAxisYLeft(axisY);
 
@@ -205,9 +233,6 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
             presenter.onClickLastWeek();
         } else if (position == ITEM_POSITION_ALL_TIME) {
             presenter.onClickAllTime();
-            Snackbar.make(getActivity().findViewById(R.id.container), "In developing",
-                    Snackbar.LENGTH_SHORT)
-                    .show();
         }
     }
 
@@ -272,6 +297,7 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
         for (int i = 0; i < data.length; i++) {
             Log.d(TAG, "displayLastWeek: [" + i + "] " + " spent minutes = " + data[i]);
         }
+        createColumnChartDays();
         invisibleAllCharts();
         columnChart.setVisibility(View.VISIBLE);
         drawColumnChart(data);
@@ -284,12 +310,24 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
     }
 
     @Override
+    public void displayAllTime(int[] data) {
+        for (int i = 0; i < data.length; i++) {
+            Log.d(TAG, "displayAllTime: [" + i + "] " + " spent minutes = " + data[i]);
+        }
+        createColumnChartMonths();
+        invisibleAllCharts();
+        columnChart.setVisibility(View.VISIBLE);
+        drawColumnChart(data);
+    }
+
+    @Override
     public void displayTotalTimeSpent(int minutes) {
         if (minutes != 0) {
-            String text = "Total time spent: " + TimeConverter.convertWithoutSeconds(minutes);
+            String text = getResources().getString(R.string.filed_total_spent_time)
+                    + TimeConverter.convertWithoutSeconds(minutes);
             totalSpentTime.setText(text);
         } else {
-            totalSpentTime.setText("Total time spent: 0");
+            totalSpentTime.setText(R.string.field_total_spent_time_zero);
         }
     }
 
@@ -358,11 +396,5 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
             currentItemSpinner = savedInstanceState.getInt(EXTRA_CURRENT_ITEM_SPINNER);
             Log.d(TAG, "onViewStateRestored: currentItemSpinner = " + currentItemSpinner);
         }
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.d(TAG, "onDestroyView: ");
     }
 }

@@ -47,7 +47,7 @@ public class ApplicationUsedViewHolder extends MvpViewHolder<ApplicationsUsedPre
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "setApplicationInfo: ", e);
             appName.setText("NameNotFound");
-            appIcon.setImageResource(R.mipmap.ic_launcher);
+            appIcon.setImageResource(R.drawable.question);
         }
 
     }

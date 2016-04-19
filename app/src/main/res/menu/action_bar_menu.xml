@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/item_charts"
-        android:icon="@drawable/ic_timeline"
+        android:icon="@drawable/chart"
         android:title=""
         app:showAsAction="always" />
 
@@ -16,7 +16,7 @@
 
     <item
         android:id="@+id/item_clear_all_apps"
-        android:title="Clear data" />
+        android:title="@string/menu_clear_data" />
 
 <!--    <item
         android:id="@+id/item_settings"

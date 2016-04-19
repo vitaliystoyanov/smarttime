@@ -1,5 +1,26 @@
 <resources>
-    <string name="app_name">App Tracker</string>
+    <string name="app_name" translatable="false">App Tracker</string>
+    <string name="notification_title" translatable="false">Application Tracker</string>
+    <string name="notification_content_text">Click to open the application</string>
+
+    <string name="message_data_deleted">All data was deleted</string>
+    <string name="message_tracker_start">Tracker was started</string>
+    <string name="message_tracker_stop">Tracker has stopped</string>
+
+    <string name="dialog_delete_title">Delete all data?</string>
+    <string name="dialog_delete_content">All data will be deleted from the application</string>
+    <string name="dialog_agree">Agree</string>
+    <string name="dialog_disagree">Disagree</string>
+
+    <string name="layout_no_history">The phone was not used</string>
+    <string name="layout_no_history_no_charts">No history. No charts</string>
+    <string name="menu_clear_data">Clear data</string>
+
+    <string name="field_total_spent_time_zero">Total spent time: 0</string>
+    <string name="filed_total_spent_time">Total spent time: </string>
+    <string name="chart_axis_spent_time">Time Spent (minutes)</string>
+    <string name="chart_axis_time_hours">Time (hour)</string>
+
     <string-array name="spinner_items_data">
         <item>Today</item>
         <item>Last week</item>
@@ -12,6 +33,31 @@
         <item>Today</item>
         <item>Last week</item>
         <item>All time</item>
+    </string-array>
+
+    <string-array name="chart_axis_days">
+        <item>Sun</item>
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+    </string-array>
+
+    <string-array name="chart_axis_months" >
+        <item>Jan</item>
+        <item>Web</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
     </string-array>
 
 </resources>

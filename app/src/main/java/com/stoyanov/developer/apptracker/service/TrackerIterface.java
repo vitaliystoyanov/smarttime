@@ -2,7 +2,7 @@ package com.stoyanov.developer.apptracker.service;
 
 public interface TrackerIterface {
 
-    String getRunningApplication();
+    String getIDRunningApp();
 
     long save(String processName);
 }

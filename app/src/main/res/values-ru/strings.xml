@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_agree">Да</string>
+    <string name="dialog_disagree">Нет</string>
+    <string name="menu_clear_data">Очистить данные</string>
+    <string name="notification_content_text">Нажмите, чтобы открыть приложение</string>
+    <string name="message_tracker_stop">Трекер остановился</string>
+    <string name="message_tracker_start">Трекер был запущен</string>
+    <string name="message_data_deleted">Все данные были удалены</string>
+    <string name="layout_no_history_no_charts">Нет истории</string>
+    <string name="layout_no_history">Телефон не был использован</string>
+    <string name="dialog_delete_title">Удалить все данные?</string>
+    <string name="dialog_delete_content">Все данные будут удалены из приложения</string>
+    <string name="chart_axis_time_hours">Время</string>
+    <string name="field_total_spent_time_zero">Общее проведенное время: 0</string>
+    <string name="filed_total_spent_time">Общее проведенное время: </string>
+    <string name="chart_axis_spent_time">Время проведенное (минуты)</string>
+
+    <string-array name="spinner_items_data">
+        <item>Сегодня</item>
+        <item>На недели</item>
+        <item>В месяц</item>
+        <item>Всё время</item>
+        <item>История</item>
+    </string-array>
+
+    <string-array name="spinner_items_charts">
+        <item>Сегодня</item>
+        <item>На недели</item>
+        <item>Всё время</item>
+    </string-array>
+
+    <string-array name="chart_axis_days">
+        <item>Вс</item>
+        <item>Пн</item>
+        <item>Вт</item>
+        <item>Ср</item>
+        <item>Чт</item>
+        <item>Пт</item>
+        <item>Сб</item>
+    </string-array>
+
+    <string-array name="chart_axis_months" >
+        <item>Янв</item>
+        <item>Фев</item>
+        <item>Март</item>
+        <item>Апр</item>
+        <item>Май</item>
+        <item>Июнь</item>
+        <item>Июль</item>
+        <item>Авг</item>
+        <item>Сент</item>
+        <item>Окт</item>
+        <item>Ноя</item>
+        <item>Дек</item>
+    </string-array>
+
+</resources>

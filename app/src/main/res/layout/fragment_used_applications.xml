@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.DataFragment">
+    tools:context=".fragments.DataFragment"
+    android:paddingTop="2dp">
 
 
     <android.support.v7.widget.RecyclerView
@@ -22,15 +23,15 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/technology"
+            android:src="@drawable/square"
             android:layout_marginBottom="8dp" />
 
         <TextView
             android:id="@+id/textview_state_empty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No history."
-            android:textSize="14dp"
+            android:text="@string/layout_no_history"
+            android:textSize="14sp"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>

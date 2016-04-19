@@ -70,10 +70,10 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     private void setupDialog() {
         confirmDialog = new MaterialDialog.Builder(this)
-                .title("Delete all data?")
-                .content("Delete all data")
-                .positiveText("Agree")
-                .negativeText("Disagree")
+                .title(R.string.dialog_delete_title)
+                .content(R.string.dialog_delete_content)
+                .positiveText(R.string.dialog_agree)
+                .negativeText(R.string.dialog_disagree)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -233,16 +233,14 @@ public class MainActivity extends AppCompatActivity implements MainView {
 
     @Override
     public void showMassageAfterDelete() {
-        Snackbar.make(container, "All data is deleted", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(container, R.string.message_data_deleted, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void showStateService(boolean isEnableService) {
-        if (isEnableService) {
-            Snackbar.make(container, "Start monitor", Snackbar.LENGTH_SHORT).show();
-        } else {
-            Snackbar.make(container, "Stop monitor", Snackbar.LENGTH_SHORT).show();
-        }
+        Snackbar.make(container,
+                isEnableService ? getString(R.string.message_tracker_start) : getString(R.string.message_tracker_stop),
+                Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

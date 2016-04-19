@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -38,7 +39,7 @@ public class TrackerService extends Service implements TrackerIterface {
         super.onCreate();
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        notification = createNotification("Unknown");
+        notification = createNotification(getString(R.string.notification_content_text));
         showNotification();
 
         initThread();
@@ -54,7 +55,7 @@ public class TrackerService extends Service implements TrackerIterface {
                 int spendSeconds = 0;
                 int idApp = -1;
                 while (runningThread) {
-                    newApp = getRunningApplication();
+                    newApp = getIDRunningApp();
                     if (!lastApp.equals(newApp) && !newApp.equals(thisPackageApp)) {
                         if (idApp != -1) {
                             Application updateApp = new Application();
@@ -65,7 +66,7 @@ public class TrackerService extends Service implements TrackerIterface {
                         spendSeconds = 0;
                         idApp = (int) save(newApp);
                         Log.d(TAG, "run: This instance app will be updated (idApp = " + idApp + ")");
-                        lastApp = newApp; //TODO Here may be a memory leak
+                        lastApp = newApp;
                     }
                     try {
                         Thread.sleep(TIME_DELAY);
@@ -86,10 +87,11 @@ public class TrackerService extends Service implements TrackerIterface {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
         return new Notification.Builder(this)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setTicker(text)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setSmallIcon(R.mipmap.ic_time_spent)
+                .setTicker(getString(R.string.message_tracker_start))
                 .setWhen(System.currentTimeMillis())
-                .setContentTitle("Application Tracker")
+                .setContentTitle(getString(R.string.notification_title))
                 .setContentText(text)
                 .setContentIntent(contentIntent)
                 .build();
@@ -100,10 +102,10 @@ public class TrackerService extends Service implements TrackerIterface {
     }
 
     @Override
-    public String getRunningApplication() {
+    public String getIDRunningApp() {
         List<ActivityManager.RunningAppProcessInfo> list = activityManager.getRunningAppProcesses();
         if (list.size() > 0) {
-            Log.d(TAG, "getRunningApplication: id = " + list.get(0).processName);
+            Log.d(TAG, "getIDRunningApp: id = " + list.get(0).processName);
             //startForeground(ID_NOTIFICATION, createNotification(list.get(0).processName));
             return list.get(0).processName;
         }
@@ -112,13 +114,12 @@ public class TrackerService extends Service implements TrackerIterface {
 
     @Override
     public long save(String processName) {
+        Application saveApp = new Application();
+        saveApp.setAppPackage(processName);
+        saveApp.setDatetime(new Date());
         ApplicationDAO dao = new ApplicationDAO(getApplicationContext());
         try {
             dao.open();
-
-            Application saveApp = new Application();
-            saveApp.setAppPackage(processName);
-            saveApp.setDatetime(new Date()); //TODO It is necessary to think about how to do better
             return dao.create(saveApp);
         } finally {
             dao.close();

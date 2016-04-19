@@ -123,6 +123,41 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
 
     public void onClickAllTime() {
         Log.d(TAG, "onClickAllTime: ");
+        new ProcessingThread() {
+
+            @Override
+            int[] performLongOperation() {
+                int[] data = new int[12];
+
+                processedData.clear();
+                for (ApplicationUsed element : model) {
+                    ApplicationUsed newInstance = new ApplicationUsed(element);
+                    processedData.add(newInstance);
+                }
+
+                for (ApplicationUsed element : processedData) {
+                    Calendar item = Calendar.getInstance();
+                    item.setFirstDayOfWeek(Calendar.MONDAY);
+                    item.setTime(element.getDate());
+                    Log.d(TAG, "performLongOperation: item.get(Calendar.MONTH) == "
+                            + item.get(Calendar.MONTH) + ", " + element.toString());
+                    data[item.get(Calendar.MONTH)] += ((element.getTimeSpent() % 3600) / 60);
+                }
+                return data;
+            }
+
+            @Override
+            void displayData(int[] data) {
+                int total = getTotalSpentMinutes(data);
+                Log.d(TAG, "displayData: total = " + total);
+                if (total != 0) {
+                    view().displayAllTime(data);
+                    view().displayTotalTimeSpent(total);
+                } else {
+                    view().displayEmptyState(true);
+                }
+            }
+        }.start();
     }
 
     private int getTotalSpentMinutes(int[] data) {
