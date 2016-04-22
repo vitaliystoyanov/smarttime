@@ -15,12 +15,13 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.stoyanov.developer.apptracker.ApplicationsUsedLoader;
 import com.stoyanov.developer.apptracker.R;
+import com.stoyanov.developer.apptracker.TimeConverter;
 import com.stoyanov.developer.apptracker.adapters.ApplicationsUsedAdapter;
 import com.stoyanov.developer.apptracker.adapters.StringSpinnerAdapter;
 import com.stoyanov.developer.apptracker.models.ApplicationUsed;
@@ -41,8 +42,8 @@ public class DataFragment extends Fragment implements DataView,
     private boolean isFirstSelectedItemSpinner;
     private DataPresenter presenter;
     private ApplicationsUsedAdapter adapter;
-    private LinearLayout layoutEmptyState;
-    private CircularProgressView progressView;
+    private RelativeLayout layoutEmptyState;
+    private CircularProgressView progressBarView;
     private Spinner spinner;
     private RecyclerView recyclerView;
     private int currentPositionItemSpinner;
@@ -56,7 +57,7 @@ public class DataFragment extends Fragment implements DataView,
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
-        return inflater.inflate(R.layout.fragment_used_applications, container, false);
+        return inflater.inflate(R.layout.fragment_data, container, false);
     }
 
     @Override
@@ -64,8 +65,8 @@ public class DataFragment extends Fragment implements DataView,
         super.onStart();
         Log.d(TAG, "onStart: ");
         animationScale = AnimationUtils.loadAnimation(getActivity(), R.anim.scale_up);
-        layoutEmptyState = (LinearLayout) getActivity().findViewById(R.id.linearlayout_empty_state_data);
-        progressView = (CircularProgressView) getActivity().findViewById(R.id.progress_view);
+        layoutEmptyState = (RelativeLayout) getActivity().findViewById(R.id.layout_empty_state_data);
+        progressBarView = (CircularProgressView) getActivity().findViewById(R.id.progress_view);
         presenter = new DataPresenter();
         presenter.bindView(this);
         setupRecycleView();
@@ -169,14 +170,17 @@ public class DataFragment extends Fragment implements DataView,
     @Override
     public void showStateProcessing() {
         Log.d(TAG, "showStateProcessing: lastItemPosition = " + lastItemPosition);
-        Snackbar.make(getActivity().findViewById(R.id.container), "Data processing. Please, wait",
+        Snackbar.make(getActivity().findViewById(R.id.container), R.string.message_data_processing,
                 Snackbar.LENGTH_SHORT)
                 .show();
     }
 
     @Override
-    public void showQuantityOfData(int quantity) {
-
+    public void showTotalSpentTime(int seconds) {
+        Snackbar.make(getActivity().findViewById(R.id.container),
+                getString(R.string.filed_total_spent_time) + " " +  TimeConverter.convert(seconds),
+                Snackbar.LENGTH_SHORT)
+                .show();
     }
 
     @Override
@@ -191,8 +195,8 @@ public class DataFragment extends Fragment implements DataView,
     }
 
     @Override
-    public void displayProgress(boolean isVisible) {
-        progressView.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+    public void displayProgress(boolean state) {
+        progressBarView.setVisibility(state ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override

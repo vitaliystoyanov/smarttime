@@ -12,7 +12,7 @@ public class ApplicationUsed implements Comparable<ApplicationUsed> {
     public ApplicationUsed(ApplicationUsed applicationUsed) {
         id = applicationUsed.getId();
         appName = applicationUsed.getApplicationName();
-        spendTime = applicationUsed.getTimeSpent();
+        spendTime = applicationUsed.getSpentTime();
         date = applicationUsed.getDate();
     }
 
@@ -35,7 +35,7 @@ public class ApplicationUsed implements Comparable<ApplicationUsed> {
         this.id = id;
     }
 
-    public int getTimeSpent() {
+    public int getSpentTime() {
         return spendTime;
     }
 
@@ -53,7 +53,7 @@ public class ApplicationUsed implements Comparable<ApplicationUsed> {
 
     @Override
     public int compareTo(ApplicationUsed another) {
-        return another.getTimeSpent() - this.spendTime;
+        return another.getSpentTime() - this.spendTime;
     }
 
     @Override

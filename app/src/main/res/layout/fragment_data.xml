@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.DataFragment"
-    android:paddingTop="2dp">
+    android:paddingTop="4dp">
 
 
     <android.support.v7.widget.RecyclerView
@@ -12,19 +12,24 @@
         android:layout_height="match_parent"
         android:scrollbars="vertical" />
 
-    <LinearLayout
-        android:id="@+id/linearlayout_empty_state_data"
+    <RelativeLayout
+        android:id="@+id/layout_empty_state_data"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:orientation="vertical"
+        android:layout_alignParentEnd="false"
         android:visibility="invisible">
 
         <ImageView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/square"
-            android:layout_marginBottom="8dp" />
+            android:visibility="visible"
+            android:id="@+id/imageView"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="18dp" />
 
         <TextView
             android:id="@+id/textview_state_empty"
@@ -32,9 +37,11 @@
             android:layout_height="wrap_content"
             android:text="@string/layout_no_history"
             android:textSize="14sp"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:layout_below="@+id/imageView"
+            android:layout_centerHorizontal="true" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <com.github.rahatarmanahmed.cpv.CircularProgressView xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/progress_view"

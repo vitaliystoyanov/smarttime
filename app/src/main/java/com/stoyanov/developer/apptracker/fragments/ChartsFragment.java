@@ -2,7 +2,6 @@ package com.stoyanov.developer.apptracker.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -14,9 +13,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.github.rahatarmanahmed.cpv.CircularProgressView;
 import com.stoyanov.developer.apptracker.ApplicationsUsedLoader;
 import com.stoyanov.developer.apptracker.R;
 import com.stoyanov.developer.apptracker.TimeConverter;
@@ -53,12 +54,12 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
     private static final int ITEM_POSITION_TODAY = 0;
     private static final int ITEM_POSITION_LAST_WEEK = 1;
     private static final int ITEM_POSITION_ALL_TIME = 2;
-    public static final int INTRO_CHART_ANIMATION_DURATION = 250;
+    public static final int INTRO_CHART_ANIMATION_DURATION = 200;
 
     private boolean isFirstItemSpinnerSelected;
     private int currentItemSpinner;
     private ColumnChartView columnChart;
-    private LinearLayout layoutEmptyState;
+    private RelativeLayout layoutEmptyState;
     private LineChartView lineChart;
     private ChartPresenter presenter;
     private TextView totalSpentTime;
@@ -67,6 +68,7 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
     private ColumnChartData columnChartData;
     private Animation animationScale;
     private String[] months;
+    private CircularProgressView progressBarView;
 
 
     @Override
@@ -83,7 +85,8 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
         months = getResources().getStringArray(R.array.chart_axis_months);
         animationScale = AnimationUtils.loadAnimation(getActivity().getApplicationContext(),
                 R.anim.scale_up);
-        layoutEmptyState = (LinearLayout) getActivity().findViewById(R.id.linearlayout_empty_state_charts);
+        progressBarView = (CircularProgressView) getActivity().findViewById(R.id.progress_view);
+        layoutEmptyState = (RelativeLayout) getActivity().findViewById(R.id.layout_empty_state_charts);
         totalSpentTime = (TextView) getActivity().findViewById(R.id.textview_total_spent_time);
         setupCharts();
         setupSpinner();
@@ -203,8 +206,8 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
     public void onPause() {
         super.onPause();
         Log.d(TAG, "onPause: ");
-        spinner.setOnItemSelectedListener(null);
         isFirstItemSpinnerSelected = false;
+        spinner.setOnItemSelectedListener(null);
     }
 
     @Override
@@ -217,7 +220,7 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Log.d(TAG, "onItemSelected: position = " + position
-                + "isFirstItemSpinnerSelected ==" + isFirstItemSpinnerSelected);
+                + ", isFirstItemSpinnerSelected == " + isFirstItemSpinnerSelected);
         if (isFirstItemSpinnerSelected) {
             currentItemSpinner = position;
             switchItem(position);
@@ -241,22 +244,12 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
 
     }
 
-    @Override
-    public void displayToday(int[] data) {
-        for (int aData : data) {
-            Log.d(TAG, "displayToday: item - " + aData);
-        }
-        invisibleAllCharts();
-        lineChart.setVisibility(View.VISIBLE);
-        drawLineChart(data);
-    }
-
-    private void resetViewportLineChart(int maxTop) {
+    private void resetViewportLineChart(int maximumTop) {
         final Viewport viewport = new Viewport(lineChart.getMaximumViewport());
         viewport.bottom = 0;
-        viewport.top = maxTop;
+        viewport.top = maximumTop;
         viewport.left = 0;
-        viewport.right = 25;
+        viewport.right = 23;
         lineChart.setMaximumViewport(viewport);
         lineChart.setCurrentViewport(viewport);
     }
@@ -294,13 +287,19 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
 
     @Override
     public void displayLastWeek(int[] data) {
-        for (int i = 0; i < data.length; i++) {
-            Log.d(TAG, "displayLastWeek: [" + i + "] " + " spent minutes = " + data[i]);
-        }
+        convertForChart(data);
         createColumnChartDays();
         invisibleAllCharts();
         columnChart.setVisibility(View.VISIBLE);
         drawColumnChart(data);
+    }
+
+    @Override
+    public void displayToday(int[] data) {
+        convertForChart(data);
+        invisibleAllCharts();
+        lineChart.setVisibility(View.VISIBLE);
+        drawLineChart(data);
     }
 
 
@@ -311,20 +310,25 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
 
     @Override
     public void displayAllTime(int[] data) {
-        for (int i = 0; i < data.length; i++) {
-            Log.d(TAG, "displayAllTime: [" + i + "] " + " spent minutes = " + data[i]);
-        }
+        convertForChart(data);
         createColumnChartMonths();
         invisibleAllCharts();
         columnChart.setVisibility(View.VISIBLE);
         drawColumnChart(data);
     }
 
+    private void convertForChart(int[] data) {
+        for (int i = 0; i < data.length; i++) {
+            data[i] = TimeConverter.convertToMinutes(data[i]);
+            Log.d(TAG, " [" + i + "] " + " spent minutes = " + data[i]);
+        }
+    }
+
     @Override
-    public void displayTotalTimeSpent(int minutes) {
-        if (minutes != 0) {
-            String text = getResources().getString(R.string.filed_total_spent_time)
-                    + TimeConverter.convertWithoutSeconds(minutes);
+    public void displayTotalTimeSpent(int seconds) { // TODO refactoring
+        if (seconds != 0) {
+            String text = getResources().getString(R.string.filed_total_spent_time) +
+                    " " + TimeConverter.convert(seconds);
             totalSpentTime.setText(text);
         } else {
             totalSpentTime.setText(R.string.field_total_spent_time_zero);
@@ -333,7 +337,7 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
 
     @Override
     public void displayProgress(boolean state) {
-        Log.d(TAG, "displayProgress: ");
+        progressBarView.setVisibility(state ? View.VISIBLE : View.INVISIBLE);
     }
 
     @Override
@@ -343,6 +347,7 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
 
     @Override
     public void displayEmptyState(boolean state) { // FIXME: 4/18/2016 operator
+        Log.d(TAG, "displayEmptyState: state = " + state);
         if (state) {
             totalSpentTime.setVisibility(View.INVISIBLE);
             lineChart.setVisibility(View.INVISIBLE);
@@ -365,7 +370,8 @@ public class ChartsFragment extends Fragment implements AdapterView.OnItemSelect
 
     @Override
     public void onLoadFinished(Loader<List<ApplicationUsed>> loader, List<ApplicationUsed> data) {
-        Log.d(TAG, "onLoadFinished: currentItemSpinner == " + currentItemSpinner);
+        Log.d(TAG, "onLoadFinished: currentItemSpinner == " + currentItemSpinner
+                + ", data size  = " + data.size());
         presenter.onLoadFinished(data);
         spinner.setSelection(currentItemSpinner);
         switchItem(currentItemSpinner);

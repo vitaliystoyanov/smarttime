@@ -3,6 +3,7 @@ package com.stoyanov.developer.apptracker.presenters;
 import android.os.Handler;
 import android.util.Log;
 
+import com.stoyanov.developer.apptracker.TimeConverter;
 import com.stoyanov.developer.apptracker.models.ApplicationUsed;
 import com.stoyanov.developer.apptracker.views.ChartView;
 
@@ -24,7 +25,6 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
 
     @Override
     protected void updateView() {
-
     }
 
     public void onClickToday() {
@@ -50,10 +50,10 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
                         processedData.add(item);
                     }
                 }
-                for (int i = 0; i <= 24; i++) {
+                for (int i = 0; i < 24; i++) {
                     for (int t = 0; t < processedData.size(); t++) {
-                        if (processedData.get(t).getDate().getHours() == i) {
-                            data[i] += ((processedData.get(t).getTimeSpent() % 3600) / 60);
+                        if (processedData.get(t).getDate().getHours() == i) { // FIXME: 4/21/2016
+                            data[i] += processedData.get(t).getSpentTime();
                         }
                     }
                 }
@@ -62,8 +62,9 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
 
             @Override
             void displayData(int[] data) {
-                int total = getTotalSpentMinutes(data);
-                if (total != 0) {
+                int total = getTotalSpent(data); // FIXME: 4/21/2016
+                view().displayEmptyState(false);
+                if (TimeConverter.convertToMinutes(total) != 0) {
                     view().displayToday(data);
                     view().displayTotalTimeSpent(total);
                 } else {
@@ -103,15 +104,16 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
                     item.setTime(element.getDate());
                     Log.d(TAG, "performLongOperation: item.get(Calendar.DAY_OF_WEEK) == "
                             + item.get(Calendar.DAY_OF_WEEK) + ", " + element.toString());
-                    data[item.get(Calendar.DAY_OF_WEEK) - 1] += ((element.getTimeSpent() % 3600) / 60);
+                    data[item.get(Calendar.DAY_OF_WEEK) - 1] += element.getSpentTime();
                 }
                 return data;
             }
 
             @Override
             void displayData(int[] data) {
-                int total = getTotalSpentMinutes(data);
-                if (total != 0) {
+                int total = getTotalSpent(data);
+                view().displayEmptyState(false);
+                if (TimeConverter.convertToMinutes(total) != 0) {
                     view().displayLastWeek(data);
                     view().displayTotalTimeSpent(total);
                 } else {
@@ -141,16 +143,17 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
                     item.setTime(element.getDate());
                     Log.d(TAG, "performLongOperation: item.get(Calendar.MONTH) == "
                             + item.get(Calendar.MONTH) + ", " + element.toString());
-                    data[item.get(Calendar.MONTH)] += ((element.getTimeSpent() % 3600) / 60);
+                    data[item.get(Calendar.MONTH)] += element.getSpentTime();
                 }
                 return data;
             }
 
             @Override
             void displayData(int[] data) {
-                int total = getTotalSpentMinutes(data);
+                int total = getTotalSpent(data);
                 Log.d(TAG, "displayData: total = " + total);
-                if (total != 0) {
+                view().displayEmptyState(false);
+                if (TimeConverter.convertToMinutes(total) != 0) {
                     view().displayAllTime(data);
                     view().displayTotalTimeSpent(total);
                 } else {
@@ -160,15 +163,17 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
         }.start();
     }
 
-    private int getTotalSpentMinutes(int[] data) {
+    private int getTotalSpent(int[] data) {
         int totalSpentMinutes = 0;
         for (int i : data) {
             totalSpentMinutes += i;
         }
+        Log.d(TAG, "getTotalSpent: totalSpentMinutes = " + totalSpentMinutes);
         return totalSpentMinutes;
     }
 
     public void onLoadFinished(List<ApplicationUsed> data) {
+        Log.d(TAG, "onLoadFinished: Data size = " + data.size());
         model.clear();
         model.addAll(data);
     }
@@ -191,11 +196,7 @@ public class ChartPresenter extends BasePresenter<List<ApplicationUsed>, ChartVi
                             @Override
                             public void run() {
                                 if (setupDone()) {
-                                    if (data != null && data.length > 0) {
-                                        displayData(data);
-                                    } else {
-                                        view().displayEmptyState(true);
-                                    }
+                                    displayData(data);
                                     view().displayProgress(false);
                                 }
                             }

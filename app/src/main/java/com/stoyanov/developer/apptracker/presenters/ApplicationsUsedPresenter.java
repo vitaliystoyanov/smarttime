@@ -9,7 +9,7 @@ public class ApplicationsUsedPresenter extends BasePresenter<ApplicationUsed,
 
     @Override
     protected void updateView() {
-        view().setTime(TimeConverter.convert(model.getTimeSpent()));
+        view().setTime(TimeConverter.convert(model.getSpentTime()));
         view().setApplicationName(model.getApplicationName());
     }
 

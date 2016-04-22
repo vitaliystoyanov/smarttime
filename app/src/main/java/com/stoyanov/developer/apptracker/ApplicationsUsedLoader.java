@@ -31,6 +31,7 @@ public class ApplicationsUsedLoader extends AsyncTaskLoader<List<ApplicationUsed
         ArrayList<Application> retrievedApps;
         try {
             retrievedApps = dao.retrieveAll();
+            Log.d(TAG, "loadInBackground: db retrieved data size = " + retrievedApps.size());
         } finally {
             dao.close();
         }
@@ -45,6 +46,8 @@ public class ApplicationsUsedLoader extends AsyncTaskLoader<List<ApplicationUsed
 
             list.add(instance);
         }
+
+        Log.d(TAG, "loadInBackground: list will be returned with size = " + list.size());
         return list;
     }
 

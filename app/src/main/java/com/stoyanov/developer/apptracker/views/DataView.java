@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface DataView {
 
-    void showQuantityOfData(int quantity);
+    void showTotalSpentTime(int seconds);
 
     void displayEmptyState(boolean isVisible);
 

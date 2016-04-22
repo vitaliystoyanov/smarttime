@@ -7,8 +7,7 @@
     <string name="message_tracker_stop">Трекер остановился</string>
     <string name="message_tracker_start">Трекер был запущен</string>
     <string name="message_data_deleted">Все данные были удалены</string>
-    <string name="layout_no_history_no_charts">Нет истории</string>
-    <string name="layout_no_history">Телефон не был использован</string>
+    <string name="layout_no_history">Нет истории</string>
     <string name="dialog_delete_title">Удалить все данные?</string>
     <string name="dialog_delete_content">Все данные будут удалены из приложения</string>
     <string name="chart_axis_time_hours">Время</string>
@@ -54,5 +53,9 @@
         <item>Ноя</item>
         <item>Дек</item>
     </string-array>
+    <string name="message_data_processing">Пожалуйста, подождите! Обработка данных</string>
+    <string name="field_an_hour">ч</string>
+    <string name="field_minute">м</string>
+    <string name="field_second">с</string>
 
 </resources>

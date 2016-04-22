@@ -3,6 +3,7 @@
     <string name="notification_title" translatable="false">Application Tracker</string>
     <string name="notification_content_text">Click to open the application</string>
 
+    <string name="message_data_processing">Please, wait! Data processing</string>
     <string name="message_data_deleted">All data was deleted</string>
     <string name="message_tracker_start">Tracker was started</string>
     <string name="message_tracker_stop">Tracker has stopped</string>
@@ -12,14 +13,17 @@
     <string name="dialog_agree">Agree</string>
     <string name="dialog_disagree">Disagree</string>
 
-    <string name="layout_no_history">The phone was not used</string>
-    <string name="layout_no_history_no_charts">No history. No charts</string>
+    <string name="layout_no_history">No history</string>
     <string name="menu_clear_data">Clear data</string>
 
     <string name="field_total_spent_time_zero">Total spent time: 0</string>
     <string name="filed_total_spent_time">Total spent time: </string>
     <string name="chart_axis_spent_time">Time Spent (minutes)</string>
     <string name="chart_axis_time_hours">Time (hour)</string>
+
+    <string name="field_an_hour">h</string>
+    <string name="field_minute">m</string>
+    <string name="field_second">s</string>
 
     <string-array name="spinner_items_data">
         <item>Today</item>

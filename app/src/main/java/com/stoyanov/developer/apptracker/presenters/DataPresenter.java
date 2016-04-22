@@ -30,17 +30,21 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
     @Override
     protected void resetState() {
         if (setupDone()) {
+            Log.d(TAG, "resetState: presenter was reset");
             view().displayEmptyState(false);
             view().displayData(Collections.<ApplicationUsed>emptyList());
         }
     }
 
     public void onLoadFinished(List<ApplicationUsed> data) {
+        Log.d(TAG, "onLoadFinished: input data size = " + data.size());
         model.clear();
         model.addAll(data);
+        Log.d(TAG, "onLoadFinished: data is deleted and new data loaded in model");
     }
 
     public void onClickHistory() {
+        Log.d(TAG, "onClickHistory: ");
         ProcessingThread thread = new ProcessingThread() {
             @Override
             void performLongOperation() {
@@ -161,7 +165,7 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
             if (!contains(bufferList, app)) {
                 for (int t = i + 1; t < list.size(); t++) {
                     if (app.getApplicationName().equals(list.get(t).getApplicationName())) {
-                        app.setSpendTime(app.getTimeSpent() + list.get(t).getTimeSpent());
+                        app.setSpendTime(app.getSpentTime() + list.get(t).getSpentTime());
                     }
                 }
                 bufferList.add(app);
@@ -203,7 +207,7 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
                                         if (isSorting) {
                                             Collections.sort(processedData);
                                         }
-                                        view().showQuantityOfData(processedData.size());
+                                        view().showTotalSpentTime(calculationSpentTime(processedData));
                                     } else {
                                         view().displayEmptyState(true);
                                     }
@@ -225,5 +229,13 @@ public class DataPresenter extends BasePresenter<List<ApplicationUsed>, DataView
         }
 
         abstract void performLongOperation();
+    }
+
+    private int calculationSpentTime(List<ApplicationUsed> data) {
+        int totalSeconds = 0;
+        for (ApplicationUsed item : data) {
+            totalSeconds += item.getSpentTime();
+        }
+        return totalSeconds;
     }
 }

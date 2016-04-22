@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -28,7 +29,7 @@ public class TrackerService extends Service implements TrackerIterface {
     private NotificationManager notificationManager;
     private ActivityManager activityManager;
     private Notification notification;
-    private boolean runningThread = true;
+    private boolean runningThread;
     private Thread thread;
 
     public TrackerService() {
@@ -37,6 +38,10 @@ public class TrackerService extends Service implements TrackerIterface {
     @Override
     public void onCreate() {
         super.onCreate();
+        initService();
+    }
+
+    private void initService() {
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         notification = createNotification(getString(R.string.notification_content_text));
@@ -45,10 +50,11 @@ public class TrackerService extends Service implements TrackerIterface {
         initThread();
     }
 
-    private void initThread() { // TODO It is necessary to refactoring this method
+    private void initThread() {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
+                runningThread = true;
                 String lastApp = "";
                 String newApp;
                 String thisPackageApp = getPackageName();
@@ -90,7 +96,6 @@ public class TrackerService extends Service implements TrackerIterface {
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.mipmap.ic_time_spent)
                 .setTicker(getString(R.string.message_tracker_start))
-                .setWhen(System.currentTimeMillis())
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(text)
                 .setContentIntent(contentIntent)
@@ -103,11 +108,18 @@ public class TrackerService extends Service implements TrackerIterface {
 
     @Override
     public String getIDRunningApp() {
-        List<ActivityManager.RunningAppProcessInfo> list = activityManager.getRunningAppProcesses();
-        if (list.size() > 0) {
-            Log.d(TAG, "getIDRunningApp: id = " + list.get(0).processName);
-            //startForeground(ID_NOTIFICATION, createNotification(list.get(0).processName));
-            return list.get(0).processName;
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
+            if (tasks.size() > 0) {
+                Log.d(TAG, "getIDRunningApp: (version <= 19) topActivity - " + tasks.get(0).topActivity.getPackageName());
+                return tasks.get(0).topActivity.getPackageName();
+            }
+        } else {
+            List<ActivityManager.RunningAppProcessInfo> list = activityManager.getRunningAppProcesses();
+            if (list.size() > 0) {
+                Log.d(TAG, "getIDRunningApp: (version => 20) id = " + list.get(0).processName);
+                return list.get(0).processName;
+            }
         }
         return null;
     }
@@ -143,13 +155,8 @@ public class TrackerService extends Service implements TrackerIterface {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        initThread();
         return START_STICKY;
-    }
-
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-        Log.d(TAG, "onTaskRemoved: ");
     }
 
     @Override

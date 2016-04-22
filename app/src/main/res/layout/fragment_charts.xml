@@ -13,41 +13,46 @@
         android:layout_marginRight="5dp"
         android:layout_marginTop="5dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textSize="12dp"
+        android:textSize="12sp"
         android:textStyle="bold" />
 
-    <LinearLayout
-        android:id="@+id/linearlayout_empty_state_charts"
+    <RelativeLayout
+        android:id="@+id/layout_empty_state_charts"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:orientation="vertical"
-        android:visibility="invisible" >
+        android:visibility="visible" >
 
         <ImageView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/square"
-            android:layout_marginBottom="8dp" />
+            android:id="@+id/imageview_square"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="18dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/layout_no_history_no_charts"
+            android:text="@string/layout_no_history"
             android:textSize="14sp"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:layout_below="@+id/imageview_square"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/textview_empty_state_charts" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <ProgressBar
-        style="@style/Widget.AppCompat.ProgressBar"
-        android:layout_width="42dp"
-        android:layout_height="42dp"
+    <com.github.rahatarmanahmed.cpv.CircularProgressView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/progress_view"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_gravity="center"
-        android:indeterminate="true"
-        android:visibility="gone" />
+        android:visibility="invisible"
+        app:cpv_animAutostart="true"
+        app:cpv_indeterminate="true" />
 
     <lecho.lib.hellocharts.view.LineChartView
         android:id="@+id/chart_line"
@@ -61,6 +66,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/textview_total_spent_time"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        android:layout_centerVertical="true" />
 
 </RelativeLayout>
