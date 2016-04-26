@@ -24,6 +24,8 @@
     <string name="field_an_hour">h</string>
     <string name="field_minute">m</string>
     <string name="field_second">s</string>
+    <string name="action_button_settings">Settings</string>
+    <string name="message_need_access">Allow access</string>
 
     <string-array name="spinner_items_data">
         <item>Today</item>

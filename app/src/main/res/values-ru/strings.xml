@@ -57,5 +57,7 @@
     <string name="field_an_hour">ч</string>
     <string name="field_minute">м</string>
     <string name="field_second">с</string>
+    <string name="message_need_access">Разрешите доступ</string>
+    <string name="action_button_settings">Настройки</string>
 
 </resources>

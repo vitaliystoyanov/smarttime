@@ -1,9 +1,14 @@
 package com.stoyanov.developer.apptracker;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
+import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
@@ -112,16 +117,35 @@ public class MainActivity extends AppCompatActivity implements MainView {
         mainPresenter.unbindView();
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
         mainPresenter.bindView(this);
-        if (lastFragment.equals(DataFragment.TAG)) {
-            mainPresenter.onShowListOfData();
-        } else if (lastFragment.equals(ChartsFragment.TAG)) {
-            mainPresenter.onClickCharts();
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1 && !checkAcces()) {
+            Log.d(TAG, "onResume: access = " + checkAcces());
+            Snackbar.make(container, R.string.message_need_access, Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.action_button_settings, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startActivity(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS));
+                        }
+                    }).setActionTextColor(Color.YELLOW)
+                    .show();
+        } else {
+            if (lastFragment.equals(DataFragment.TAG)) {
+                mainPresenter.onShowListOfData();
+            } else if (lastFragment.equals(ChartsFragment.TAG)) {
+                mainPresenter.onClickCharts();
+            }
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+    private boolean checkAcces() {
+        AppOpsManager appOps = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+        int mode = appOps.checkOpNoThrow("android:get_usage_stats",
+                android.os.Process.myUid(), getPackageName());
+        return mode == AppOpsManager.MODE_ALLOWED;
     }
 
     @Override

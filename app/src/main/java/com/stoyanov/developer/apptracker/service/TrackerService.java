@@ -1,11 +1,16 @@
 package com.stoyanov.developer.apptracker.service;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
@@ -18,6 +23,8 @@ import com.stoyanov.developer.apptracker.database.dao.entity.Application;
 
 import java.util.Date;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class TrackerService extends Service implements TrackerIterface {
 
@@ -38,10 +45,10 @@ public class TrackerService extends Service implements TrackerIterface {
     @Override
     public void onCreate() {
         super.onCreate();
-        initService();
     }
 
     private void initService() {
+
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         notification = createNotification(getString(R.string.notification_content_text));
@@ -56,13 +63,15 @@ public class TrackerService extends Service implements TrackerIterface {
             public void run() {
                 runningThread = true;
                 String lastApp = "";
-                String newApp;
+                String newApp = "";
                 String thisPackageApp = getPackageName();
                 int spendSeconds = 0;
                 int idApp = -1;
                 while (runningThread) {
                     newApp = getIDRunningApp();
-                    if (!lastApp.equals(newApp) && !newApp.equals(thisPackageApp)) {
+                    if (!lastApp.equals(newApp) &&
+                            newApp != null &&
+                            !newApp.equals(thisPackageApp)) {
                         if (idApp != -1) {
                             Application updateApp = new Application();
                             updateApp.setId(idApp);
@@ -108,18 +117,42 @@ public class TrackerService extends Service implements TrackerIterface {
 
     @Override
     public String getIDRunningApp() {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT_WATCH) {
             List<ActivityManager.RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
             if (tasks.size() > 0) {
-                Log.d(TAG, "getIDRunningApp: (version <= 19) topActivity - " + tasks.get(0).topActivity.getPackageName());
+                Log.d(TAG, "getIDRunningApp: (version <= KITKAT_WATCH) topActivity - " + tasks.get(0).topActivity.getPackageName());
                 return tasks.get(0).topActivity.getPackageName();
             }
-        } else {
+        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
             List<ActivityManager.RunningAppProcessInfo> list = activityManager.getRunningAppProcesses();
             if (list.size() > 0) {
-                Log.d(TAG, "getIDRunningApp: (version => 20) id = " + list.get(0).processName);
+                Log.d(TAG, "getIDRunningApp: (version => KITKAT_WATCH) id(0) = " + list.get(0).processName);
                 return list.get(0).processName;
             }
+        } else {
+            Log.d(TAG, "getIDRunningApp: (version == LOLLIPOP_MR1)");
+            return getCurrentRunningAppInLolipopMR();
+        }
+        return null;
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+    private String getCurrentRunningAppInLolipopMR() {
+        UsageStatsManager mUsageStatsManager = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
+        long time = System.currentTimeMillis();
+        List<UsageStats> stats = mUsageStatsManager.queryUsageStats(
+                UsageStatsManager.INTERVAL_DAILY, time - 1000 * 10, time);
+        if (stats != null) {
+            Log.d(TAG, "getCurrentRunningAppInLolipopMR: stats size == " + stats.size());
+            SortedMap<Long, UsageStats> mySortedMap = new TreeMap<>();
+            for (UsageStats usageStats : stats) {
+                mySortedMap.put(usageStats.getLastTimeUsed(), usageStats);
+            }
+            if (!mySortedMap.isEmpty()) {
+                return mySortedMap.get(mySortedMap.lastKey()).getPackageName();
+            }
+        } else {
+            Log.d(TAG, "getCurrentRunningAppInLolipopMR: List<UsageStats> stats == null");
         }
         return null;
     }
@@ -155,7 +188,7 @@ public class TrackerService extends Service implements TrackerIterface {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        initThread();
+        initService();
         return START_STICKY;
     }
 

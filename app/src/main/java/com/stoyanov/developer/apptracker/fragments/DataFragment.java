@@ -177,6 +177,7 @@ public class DataFragment extends Fragment implements DataView,
 
     @Override
     public void showTotalSpentTime(int seconds) {
+
         Snackbar.make(getActivity().findViewById(R.id.container),
                 getString(R.string.filed_total_spent_time) + " " +  TimeConverter.convert(seconds),
                 Snackbar.LENGTH_SHORT)

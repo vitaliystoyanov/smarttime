@@ -16,7 +16,7 @@
         tool:text="30 s"
         android:textIsSelectable="false"
         android:textSize="14sp"
-        android:textColor="#de000000" />
+        android:textColor="@color/primary_text_default_material_light" />
 
     <ImageView
         android:id="@+id/imageview_app_icon"
@@ -40,8 +40,8 @@
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/imageview_app_icon"
         tool:text="Vkontakte"
-        android:textSize="13sp"
+        android:textSize="14sp"
         android:textStyle="bold"
-        android:textColor="#db000000" />
+        android:textColor="@color/primary_text_default_material_light" />
 
 </RelativeLayout>
