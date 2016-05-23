@@ -1,6 +1,6 @@
 package com.stoyanov.developer.apptracker.service;
 
-public interface TrackerIterface {
+public interface TrackerInterface {
 
     String getIDRunningApp();
 

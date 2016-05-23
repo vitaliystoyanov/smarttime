@@ -10,7 +10,6 @@ import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.IBinder;
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class TrackerService extends Service implements TrackerIterface {
+public class TrackerService extends Service implements TrackerInterface {
 
     private static final String TAG = "TrackerService";
 
@@ -103,7 +102,7 @@ public class TrackerService extends Service implements TrackerIterface {
                 PendingIntent.FLAG_CANCEL_CURRENT);
         return new Notification.Builder(this)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .setSmallIcon(R.mipmap.ic_time_spent)
+                .setSmallIcon(R.mipmap.ic_time_span)
                 .setTicker(getString(R.string.message_tracker_start))
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(text)
